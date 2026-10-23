@@ -18,27 +18,37 @@ const TAMANIO_CELDA = 25;
     function dibujarTodo() {
       limpiarCanvas();
       dibujarTablero();
+      pintarParte(5,5);
+      pintarParte(10,2);
+      pintarParte(12,(canvas.height/TAMANIO_CELDA - 1));
+      pintarParte((canvas.width/TAMANIO_CELDA - 1),12)
+      pintarParte(0,15);
+      pintarParte((canvas.width/TAMANIO_CELDA - 1), (canvas.height/TAMANIO_CELDA - 1))
     }
     
 function dibujarTablero() {
-    let canvas = document.getElementById("canvasJuego"); 
-    let ctx = canvas.getContext("2d");
-    let TAMANIO_CELDA = 30; 
     let anchoCanvas = canvas.width;
     let altoCanvas = canvas.height;
     ctx.clearRect(0, 0, anchoCanvas, altoCanvas);
     ctx.strokeStyle = "white"; 
     ctx.beginPath();
-    for (let i = 0; i <= anchoCanvas; i += TAMANIO_CELDA) {
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, altoCanvas);
+    for (let x = 0; x <= anchoCanvas; x += TAMANIO_CELDA) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, altoCanvas);
     }
-    for (let x = 0; x <= altoCanvas; x += TAMANIO_CELDA) {
-        ctx.moveTo(0, x);
-        ctx.lineTo(anchoCanvas, x);
+    for (let y = 0; y <= altoCanvas; y += TAMANIO_CELDA) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(anchoCanvas, y);
     }
     ctx.stroke(); 
 }
 
-
+function pintarParte(lineaX, lineaY) {
+  let posX = lineaX * TAMANIO_CELDA;
+  let posY = lineaY * TAMANIO_CELDA;
+  ctx.fillStyle = "orange"; 
+  ctx.fillRect(posX, posY, TAMANIO_CELDA, TAMANIO_CELDA);
+  ctx.strokeStyle = "black"; 
+  ctx.strokeRect(posX, posY, TAMANIO_CELDA, TAMANIO_CELDA);
+}
 
