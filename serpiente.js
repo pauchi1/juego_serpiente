@@ -17,19 +17,29 @@ let comida = {
 let intervaloSerpiente = null;
 let direccionActual = "derecha";
 let puntaje = 0;
+let velocidad = 300;
 
 // Primera pintura del juego al cargar la página
 dibujarTodo();
 pintarComidaInicial();
 
+alert("Bienvenido al juego de la serpienteee que está buscando la parte de su cola, antes de empezar, les digo buenos días, buenas tardes o buenas noches osiosi")
+
 // =========================
 // FUNCIONES DE DIBUJO
 // =========================
 
+function dibujarTodo() {
+  limpiarCanvas();
+  dibujarTablero();
+  pintarComida();
+  pintarSerpiente();
+}
 function iniciarJuego() {
   if (intervaloSerpiente === null) {
-    intervaloSerpiente = setInterval(moverSerpiente, 200);
+    intervaloSerpiente = setInterval(moverSerpiente, velocidad);
     console.log("Juego iniciado");
+    document.getElementById("mensaje").textContent = "Sigue comiendo tanto como puedas :D";
   }
 }
 
@@ -38,18 +48,29 @@ function pausarJuego() {
     clearInterval(intervaloSerpiente);
     intervaloSerpiente = null;
     console.log("Juego pausado");
+    document.getElementById("mensaje").textContent = "Juego pausado, dale de nuevo a iniciar para continuar";
   }
+}
+
+function reiniciarJuego() {
+  pausarJuego();
+  serpiente.length = 0;
+  serpiente.push(
+    {x: 8, y: 9},
+    {x: 8, y: 10},
+    {x: 7, y: 10},
+    {x: 6, y: 10}
+  );
+  direccionActual = "derecha";
+  puntaje = 0;
+  document.getElementById("puntaje").textContent = puntaje;
+  document.getElementById("mensaje").textContent = "¡Partida reiniciada! Presiona iniciar y comenzará ma magia";
+  pintarComidaInicial();
+  dibujarTodo();
 }
 
 function limpiarCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function dibujarTodo() {
-  limpiarCanvas();
-  dibujarTablero();
-  pintarComida();
-  pintarSerpiente();
 }
     
 function dibujarTablero() {
@@ -76,27 +97,14 @@ function pintarParte(lineaX, lineaY) {
   ctx.strokeRect(posX, posY, TAMANIO_CELDA, TAMANIO_CELDA);
 }
 
-function moverSerpiente() {
-  let comio = atrapaComida();
-  if (direccionActual === "derecha") {
-    moverDerecha(comio);
-  } else if (direccionActual === "izquierda") {
-    moverIzquierda(comio);
-  } else if (direccionActual === "arriba") {
-    moverArriba(comio);
-  } else if (direccionActual === "abajo") {
-    moverAbajo(comio);
+function verificarColisionBordes() {
+  let cabeza = serpiente[0];
+  let maxColumnas = canvas.width / TAMANIO_CELDA;
+  let maxFilas = canvas.height / TAMANIO_CELDA;
+  if (cabeza.x < 0 || cabeza.x >= maxColumnas  || cabeza.y < 0 || cabeza.y >= maxFilas ) {
+    return true;
   }
-  if (comio) {
-    puntaje += 1;
-    document.getElementById("puntaje").textContent = puntaje;
-    pintarComidaInicial();
-  }
-  dibujarTodo();
-}
-
-function cambiarDireccion(nuevaDireccion) {
-  direccionActual = nuevaDireccion;
+  return false;
 }
 
 function pintarComidaInicial() {
@@ -128,6 +136,38 @@ function pintarSerpiente() {
       ctx.fillStyle = "#f5e35f";
     }
     pintarParte(parte.x, parte.y);
+  }
+}
+
+function cambiarDireccion(nuevaDireccion) {
+  if (direccionActual === "derecha" && nuevaDireccion === "izquierda") return;
+  if (direccionActual === "izquierda" && nuevaDireccion === "derecha") return;
+  if (direccionActual === "arriba" && nuevaDireccion === "abajo") return;
+  if (direccionActual === "abajo" && nuevaDireccion === "arriba") return;
+  direccionActual = nuevaDireccion;
+}
+
+function moverSerpiente() {
+  let comio = atrapaComida();
+  if (direccionActual === "derecha") {
+    moverDerecha(comio);
+  } else if (direccionActual === "izquierda") {
+    moverIzquierda(comio);
+  } else if (direccionActual === "arriba") {
+    moverArriba(comio);
+  } else if (direccionActual === "abajo") {
+    moverAbajo(comio);
+  }
+  if (comio) {
+    puntaje += 1;
+    document.getElementById("puntaje").textContent = puntaje;
+    pintarComidaInicial();
+  }
+  dibujarTodo();
+  if (verificarColisionBordes()) {
+    pausarJuego();
+    document.getElementById("mensaje").textContent = "¡GAME OVER! Te quitaste la cabeza contra la pared D:";
+    return;
   }
 }
 
